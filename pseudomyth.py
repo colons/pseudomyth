@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # coding=utf-8
 
 # A script with which to determine what order to watch keions in
@@ -7,9 +7,10 @@ from random import choice
 from sys import argv
 import os
 import shutil
-import commands
+import subprocess
 import re
-import zenhan
+# import zenhan
+# doesn't work in python 3; would be very easy to port
 
 class Series():
     """ A series. Contains episodes. """
@@ -42,8 +43,8 @@ class Episode():
         
         # a horrible workaround for resolving aliases on OS X
         # see http://blog.warrenmoore.net/blog/2010/01/09/make-terminal-follow-aliases-like-symlinks/
-        if commands.getstatusoutput('getTrueName')[0] != 32512:
-            self.truefilename = commands.getoutput('getTrueName "%s"' % filename)
+        if subprocess.getstatusoutput('getTrueName')[0] != 32512:
+            self.truefilename = subprocess.getoutput('getTrueName "%s"' % filename)
         else:
             self.truefilename = self.filename
         
@@ -97,7 +98,7 @@ class Episode():
         
         if epno == None:
             # never mind
-            print ' :: abandoning parse of', self.filename, 'at episode number'
+            print(' :: abandoning parse of', self.filename, 'at episode number')
             return
 
         series = None
@@ -113,7 +114,7 @@ class Episode():
                 break
         
         if series == None:
-            print ' :: abandoning parse of', self.filename, 'at series'
+            print(' :: abandoning parse of', self.filename, 'at series')
             return
         
         self.epno = epno
@@ -148,35 +149,30 @@ if not argv[-1] == 'legacy':
     
     total = len(weighted)
 
-    # confirmation
-    # full-width numbers are the only reason we need zenhan, so feel free to ditch this bit
-    keion_count = zenhan.h2z(unicode(total))
+    # keion_count = zenhan.h2z(str(total))
+    keion_count = str(total)
 
     if total != 1:
-        plural = u'Ｓ'
+        plural = 'Ｓ'
     else:
         plural = ''
 
-    print u'／人◕ ‿‿ ◕人＼  ＬＥＴ’Ｓ　ＷＡＴＣＨ　%s　ＫＥＩＯＮ%s！' % (keion_count, plural)
+    print('／人◕ ‿‿ ◕人＼  ＬＥＴ’Ｓ　ＷＡＴＣＨ　%s　ＫＥＩＯＮ%s！' % (keion_count, plural))
 
     for series in sorted(serieslist, key=lambda series: series.name):
-        print series
+        print(series)
 
     
     for n in range(len(weighted)):
-        issued = raw_input('')
+        issued = input('')
         series = choice(weighted)
         playlist = []
         
-        # you can comment out these next two line if you like
-        if issued == ' ':
-            playlist.append('/Users/nivi/.fim')
-            
         series = choice(weighted)
 
         episode = series.episodes.pop(0)
         weighted.remove(series)
-        print '%i/%i - %s' % (n+1, total, episode),
+        print('%i/%i - %s' % (n+1, total, episode), end='')
 
         if series.op:
             playlist.append('"%s"' % series.op.truefilename)
@@ -196,7 +192,7 @@ else:
     showlist = []
 
     while True:
-        newkeion = raw_input('')
+        newkeion = input('')
         if newkeion == '':
             break
         else:
@@ -209,6 +205,6 @@ else:
 
     for n in range(len(showlist)):
         nextshow = choice(showlist)
-        print '%i/%i - %s' % (n+1, total, nextshow),
+        print('%i/%i - %s' % (n+1, total, nextshow), end='')
         showlist.remove(nextshow)
-        raw_input('')
+        input('')
