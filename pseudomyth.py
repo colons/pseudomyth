@@ -9,8 +9,22 @@ import os
 import shutil
 import subprocess
 import re
-# import zenhan
-# doesn't work in python 3; would be very easy to port
+
+def fullwidth(string):
+    # zenhan is broken, we need to do this manually
+    chars = {
+            '0': '０', '1': '１', '2': '２',
+            '3': '３', '4': '４', '5': '５',
+            '6': '６', '7': '７', '8': '８',
+            '9': '９',
+    }
+    
+    new_string = ''
+    for character in string:
+        new_string = new_string + chars[character]
+
+    return new_string
+
 
 class Series():
     """ A series. Contains episodes. """
@@ -148,9 +162,7 @@ if not argv[-1] == 'legacy':
             weighted.append(series)
     
     total = len(weighted)
-
-    # keion_count = zenhan.h2z(str(total))
-    keion_count = str(total)
+    keion_count = fullwidth(str(total))
 
     if total != 1:
         plural = 'Ｓ'
