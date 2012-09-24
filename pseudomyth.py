@@ -21,9 +21,7 @@ def fullwidth(string):
             '9': '９',
     }
 
-    ns = ''.join([chars[c] for c in string])
-
-    return ns
+    return ''.join([chars[c] for c in string])
 
 
 class Series():
@@ -62,7 +60,8 @@ class Episode():
         else:
             self.truefilename = self.filename
 
-        exts = ['mkv', 'avi', 'mp4']
+        exts = ['mkv', 'avi', 'mp4', 'mpg', 'webm', 'mov', 'ogg', 'wmv', 'flv', 'm4v']
+
         if not os.path.isdir(filename) and filename.split('.')[-1].lower() in exts:
             self.parse(filename)
 
