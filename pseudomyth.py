@@ -20,12 +20,10 @@ def fullwidth(string):
             '6': '６', '7': '７', '8': '８',
             '9': '９',
     }
-    
-    new_string = ''
-    for character in string:
-        new_string = new_string + chars[character]
 
-    return new_string
+    ns = ''.join([chars[c] for c in string])
+
+    return ns
 
 
 class Series():
@@ -41,7 +39,7 @@ class Series():
             bonus += 'OP '
         if self.ed:
             bonus += 'ED '
-            
+
         return '%s %r %s' % (self.name, [e.epno for e in self.episodes], bonus)
 
     def append(self, episode):
@@ -56,14 +54,14 @@ class Episode():
     def __init__(self, filename):
         self.parsed = False
         self.filename = filename
-        
+
         # a horrible workaround for resolving aliases on OS X
         # see http://blog.warrenmoore.net/blog/2010/01/09/make-terminal-follow-aliases-like-symlinks/
         if subprocess.getstatusoutput('getTrueName')[0] != 32512:
             self.truefilename = subprocess.getoutput('getTrueName "%s"' % filename)
         else:
             self.truefilename = self.filename
-        
+
         exts = ['mkv', 'avi', 'mp4']
         if not os.path.isdir(filename) and filename.split('.')[-1].lower() in exts:
             self.parse(filename)
@@ -73,7 +71,7 @@ class Episode():
 
     def parse(self, filename):
         filename = filename.replace('_', ' ')
-        
+
         # remove repeated spaces
         while '  ' in filename:
             filename = filename.replace('  ', ' ')
@@ -111,7 +109,7 @@ class Episode():
             for regex in one_matches:
                 if re.search(regex, filename):
                     epno = 0
-        
+
         if epno == None:
             # never mind
             print(' :: abandoning parse of', self.filename, 'at episode number')
@@ -128,11 +126,11 @@ class Episode():
                 pass
             else:
                 break
-        
+
         if series == None:
             print(' :: abandoning parse of', self.filename, 'at series')
             return
-        
+
         self.epno = epno
         self.series = series
 
@@ -144,9 +142,9 @@ if not argv[-1] == 'legacy':
         os.makedirs('consumed')
 
     serieslist = []
-    
+
     files = [name for name in os.listdir('.') if not name.startswith('.')]
-        
+
     for filename in files:
         episode = Episode(filename)
         if episode.parsed and episode.series not in [s.name for s in serieslist]:
@@ -157,12 +155,12 @@ if not argv[-1] == 'legacy':
         elif episode.parsed:
             series = [s for s in serieslist if s.name == episode.series][0]
             series.append(episode)
-    
+
     weighted = []
     for series in serieslist:
         for episode in series.episodes:
             weighted.append(series)
-    
+
     total = len(weighted)
     keion_count = fullwidth(str(total))
 
@@ -176,12 +174,11 @@ if not argv[-1] == 'legacy':
     for series in sorted(serieslist, key=lambda series: series.name):
         print(series)
 
-    
     for n in range(len(weighted)):
         issued = input('')
         series = choice(weighted)
         playlist = []
-        
+
         series = choice(weighted)
 
         episode = series.episodes.pop(0)
@@ -190,14 +187,14 @@ if not argv[-1] == 'legacy':
 
         if series.op:
             playlist.append('"%s"' % series.op.truefilename)
-    
+
         playlist.append('"%s"' % episode.truefilename)
 
         if series.ed:
             playlist.append('"%s"' % series.ed.truefilename)
 
         command = player % ' '.join(playlist)
-        os.system(command) 
+        os.system(command)
 
         shutil.move(episode.filename, 'consumed/%s' % episode.filename)
 
