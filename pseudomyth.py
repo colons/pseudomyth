@@ -10,6 +10,8 @@ import shutil
 import subprocess
 import re
 
+player = 'mplayer -fs %s &> /dev/null'
+
 def fullwidth(string):
     # zenhan is broken, we need to do this manually
     chars = {
@@ -194,7 +196,7 @@ if not argv[-1] == 'legacy':
         if series.ed:
             playlist.append('"%s"' % series.ed.truefilename)
 
-        command = 'mplayer -fs %s &> /dev/null' % ' '.join(playlist)
+        command = player % ' '.join(playlist)
         os.system(command) 
 
         shutil.move(episode.filename, 'consumed/%s' % episode.filename)
