@@ -1,10 +1,10 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.3
 # coding=utf-8
 
 # A script with which to determine what order to watch keions in
 
 from random import choice
-from sys import argv
+from sys import argv, exit
 import os
 import shutil
 import subprocess
@@ -12,13 +12,12 @@ import re
 
 player = 'mplayer -fs %s &> /dev/null'
 
+
 def fullwidth(string):
     # zenhan is broken, we need to do this manually
     chars = {
-            '0': '０', '1': '１', '2': '２',
-            '3': '３', '4': '４', '5': '５',
-            '6': '６', '7': '７', '8': '８',
-            '9': '９',
+        '0': '０', '1': '１', '2': '２', '3': '３', '4': '４', '5': '５',
+        '6': '６', '7': '７', '8': '８', '9': '９',
     }
 
     return ''.join([chars[c] for c in string])
@@ -45,7 +44,9 @@ class Series():
             setattr(self, episode.epno, episode)
         else:
             self.episodes.append(episode)
-            self.episodes = sorted(self.episodes, key=lambda episode: episode.epno)
+            self.episodes = sorted(self.episodes,
+                                   key=lambda episode: episode.epno)
+
 
 class Episode():
     """ An episode within a series, and its associated file. """
@@ -53,17 +54,19 @@ class Episode():
         self.parsed = False
         self.filename = filename
 
-        # a horrible workaround for resolving aliases on OS X
-        # see http://blog.warrenmoore.net/blog/2010/01/09/make-terminal-follow-aliases-like-symlinks/
+        # resolve aliases
         if subprocess.getstatusoutput('getTrueName')[0] != 32512:
-            self.truefilename = subprocess.getoutput('getTrueName "%s"' % filename)
+            self.truefilename = subprocess.getoutput('getTrueName "%s"'
+                                                     % filename)
         else:
             self.truefilename = self.filename
 
-        exts = ['mkv', 'avi', 'mp4', 'mpg', 'webm', 'mov', 'ogg', 'wmv', 'flv', 'm4v']
+        exts = ['mkv', 'avi', 'mp4', 'mpg', 'webm', 'mov', 'ogg', 'wmv', 'flv',
+                'm4v']
 
-        if not os.path.isdir(filename) and filename.split('.')[-1].lower() in exts:
-            self.parse(filename)
+        if (not os.path.isdir(filename)
+                and filename.split('.')[-1].lower() in exts):
+            self.parse(os.path.splitext(filename)[0])
 
     def __repr__(self):
         return '%s - %i' % (self.series, self.epno)
@@ -78,12 +81,15 @@ class Episode():
         # remove metadata (things in brackets)
         metadata = re.findall('[\(\[].*?[\)\]]', filename)
         for m in metadata:
-             filename = filename.replace(m, '').strip()
+            filename = filename.replace(m, '').strip()
 
         epno = None
-        # regexes for matching episode numbers
-        #                01v2                 - 01                 ep( )01                ep. 01                  01
-        epno_matches = ['\\b\d+(?=v\d+\\b)', '(?<=\s-\s)\d+\\b', '(?i)(?<=ep) ?\d+\\b', '(?i)(?<=ep\. )\d+\\b', '\\b\d+\\b']
+        epno_matches = [
+            #    01v2                 - 01                 ep( )01
+            r'\b\d+(?=v\d+\b)', r'(?<=\s-\s)\d+\b', r'(?i)(?<=ep) ?\d+\b',
+            #    ep. 01                  01
+            r'(?i)(?<=ep\. )\d+\b', r'\b\d+\b']
+
         for regex in epno_matches:
             try:
                 epno = int(re.findall(regex, filename)[0])
@@ -92,32 +98,36 @@ class Episode():
             else:
                 break
 
-        if epno == None:
+        if epno is None:
             # it might be an opening or an ending or an OVA
-            op_matches = ['(?i)\\bOP\d*\\b']
+            op_matches = [r'(?i)\bOP\d*\b']
             for regex in op_matches:
                 if re.search(regex, filename):
                     epno = 'op'
 
-            ed_matches = ['(?i)\\bED\d*\\b']
+            ed_matches = [r'(?i)\bED\d*\b']
             for regex in ed_matches:
                 if re.search(regex, filename):
                     epno = 'ed'
 
-            one_matches = ['(?i)\\bSpecial\\b', '(?i)\\bOVA\\b']
+            one_matches = [r'(?i)\bSpecial\b', r'(?i)\bOVA\b']
             for regex in one_matches:
                 if re.search(regex, filename):
                     epno = 0
 
-        if epno == None:
-            # never mind
-            print(' :: abandoning parse of', self.filename, 'at episode number')
-            return
+        if epno is None:
+            # potentially a film or something
+            epno = 0
 
         series = None
-        # regexes for matching series names
-        #                 ^bento ep(.)(|)                  ^bento - 0                                        ^bento 0
-        series_matches = ['(?i)^.*?(?=\sep\.?\s*\d+\\b)', '(?i)^.*?(?=\s-\s(?=\d+|Special|OVA|OP\d*|ED\d*)\\b)', '(?i)^.*?\s(?=\d|OP\d*\\b|ED\d*\\b|Special|OVA\\b)']
+
+        series_matches = [
+            r'(?i)^.*?(?=\sep\.?\s*\d+\b)',  # bento ep(.)(|)
+            r'(?i)^.*?(?=\s-\s(?=\d+|Special|OVA|OP\d*|ED\d*)\b)',  # bento - 0
+            r'(?i)^.*?\s(?=\d|OP\d*\b|ED\d*\b|Special|OVA\b)',  # bento 0
+            r'(?i)^.*$',  # bento
+        ]
+
         for regex in series_matches:
             try:
                 series = re.findall(regex, filename)[0].strip()
@@ -126,7 +136,7 @@ class Episode():
             else:
                 break
 
-        if series == None:
+        if series is None:
             print(' :: abandoning parse of', self.filename, 'at series')
             return
 
@@ -135,6 +145,7 @@ class Episode():
 
         self.parsed = True
         # print '%s - %i %r' % (series, epno, metadata)
+
 
 if not argv[-1] == 'legacy':
     if not os.path.exists('consumed'):
@@ -146,7 +157,9 @@ if not argv[-1] == 'legacy':
 
     for filename in files:
         episode = Episode(filename)
-        if episode.parsed and episode.series not in [s.name for s in serieslist]:
+        series_names = [s.name for s in serieslist]
+
+        if episode.parsed and episode.series not in series_names:
             series = Series(episode.series)
             series.append(episode)
             serieslist.append(series)
@@ -174,7 +187,10 @@ if not argv[-1] == 'legacy':
         print(series)
 
     for n in range(len(weighted)):
-        issued = input('')
+        try:
+            issued = input('')
+        except KeyboardInterrupt:
+            exit()
         series = choice(weighted)
         playlist = []
 
