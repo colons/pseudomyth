@@ -191,6 +191,7 @@ if not argv[-1] == 'legacy':
             issued = input('')
         except KeyboardInterrupt:
             exit()
+
         series = choice(weighted)
         playlist = []
 
@@ -198,7 +199,6 @@ if not argv[-1] == 'legacy':
 
         episode = series.episodes.pop(0)
         weighted.remove(series)
-        print('%i/%i - %s' % (n+1, total, episode), end='')
 
         if series.op:
             playlist.append('"%s"' % series.op.truefilename)
@@ -209,7 +209,10 @@ if not argv[-1] == 'legacy':
             playlist.append('"%s"' % series.ed.truefilename)
 
         command = player % ' '.join(playlist)
+
+        print('\r -- playing...', end='')
         os.system(command)
+        print('\r%i/%i - %s' % (n+1, total, episode), end='')
 
         shutil.move(episode.filename, 'consumed/%s' % episode.filename)
 
