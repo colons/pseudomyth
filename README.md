@@ -7,7 +7,8 @@ Example
 -----
 
 ```
-[nivi@hakase:~/Movies/keions] 
+$ pip install pseudomyth  # requires python 3, so you may need to type pip3 or something
+
 $ ls
 [Coalgirls]_Clannad_10_(1280x720_Blu-Ray_FLAC)_[3827A783].mkv
 [Coalgirls]_Clannad_ED_(1280x720_Blu-Ray_FLAC)_[A230547E].mkv
@@ -22,7 +23,6 @@ $ ls
 [SGKK-Ruri] Deadman Wonderland - 01 (1280x720 H264 AAC) [666F0275].mkv
 [SGKK-Ruri] Deadman Wonderland - 02 (1280x720 H264 AAC) [CD79F07F].mkv
 
-[nivi@hakase:~/Movies/keions] 
 $ pseudomyth 
 ／人◕ ‿‿ ◕人＼  ＬＥＴ’Ｓ　ＷＡＴＣＨ　１０　ＫＥＩＯＮＳ！
 Clannad [10] OP ED 
