@@ -1,10 +1,8 @@
-pseudomyth
-==========
+# pseudomyth
 
 A script that parses filenames in a folder looking for videos with common release filename structures and plays them back in an appropriately random order.
 
-Example
------
+## Example
 
 ```
 $ pip install pseudomyth  # requires python 3, so you may need to type pip3 or something
