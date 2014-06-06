@@ -1,7 +1,4 @@
-#!/usr/bin/env python3
 # coding=utf-8
-
-# A script with which to determine what order to watch keions in
 
 from random import choice
 from sys import argv, exit
