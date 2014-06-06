@@ -34,4 +34,4 @@ YuruYuri [4, 5]
 
 At this stage, if the list of episodes is to your satisfaction, you could hit enter and pseudomyth would start playing back the first present episode of a random series. Shows with more present episodes are more likely to be picked. In the case of (in this example) Clannad, the opening and ending would be played prior to and following the episode selected.
 
-Once playback of a keion is complete, it is moved to a 'consumed' subdirectory of the current working directory and the cycle begins anew. You could, at this point, either ^C out of the script or hit enter to watch another keion. Because watched episodes are moved, you can stop and resume between episodes at will.
+Once playback of an episode is complete, it is moved to a 'consumed' subdirectory of the current working directory and the cycle begins anew. You could, at this point, either ^C out of the script or hit enter to watch another episode. Because watched episodes are moved, you can stop and resume between episodes at will.
