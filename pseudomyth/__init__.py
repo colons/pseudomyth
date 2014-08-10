@@ -82,14 +82,23 @@ class Episode():
 
         epno = None
         epno_matches = [
-            #    01v2                 - 01                 ep( )01
-            r'\b\d+(?=v\d+\b)', r'(?<=\s-\s)\d+\b', r'(?i)(?<=ep) ?\d+\b',
-            #    ep. 01                  01
-            r'(?i)(?<=ep\. )\d+\b', r'\b\d+\b']
+            # 01v2
+            r'\b(?P<epno>\d+)v\d+\b',
+            # - 01
+            r'\s-\s(?P<epno>\d+)\b',
+            # ep( )01
+            r'ep ?(?P<epno>\d+)\b',
+            # ep. 01
+            r'ep\. (?P<epno>)\d+\b',
+            # 01
+            r'\b(?P<epno>\d+)\b',
+        ]
 
         for regex in epno_matches:
             try:
-                epno = int(re.findall(regex, filename)[0])
+                epno = int(list(re.finditer(
+                    regex, filename, flags=re.I
+                ))[0].group('epno'))
             except IndexError:
                 pass
             else:
