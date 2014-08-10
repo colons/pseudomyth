@@ -82,6 +82,8 @@ class Episode():
 
         epno = None
         epno_matches = [
+            # S01E01
+            r'\bS\d+E(?P<epno>\d+)\b',
             # 01v2
             r'\b(?P<epno>\d+)v\d+\b',
             # - 01
@@ -128,6 +130,7 @@ class Episode():
         series = None
 
         series_matches = [
+            r'(?i)^.*?(?=\sS\d+E\d+\b)',  # bento S1E01
             r'(?i)^.*?(?=\sep\.?\s*\d+\b)',  # bento ep(.)(|)
             r'(?i)^.*?(?=\s-\s(?=\d+|Special|OVA|OP\d*|ED\d*)\b)',  # bento - 0
             r'(?i)^.*?\s(?=\d|OP\d*\b|ED\d*\b|Special|OVA\b)',  # bento 0
