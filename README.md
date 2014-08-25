@@ -7,7 +7,7 @@ Requires mplayer.
 ## Example
 
 ```
-$ pip install pseudomyth  # requires python 3, so you may need to type pip3 or something
+$ pip install pseudomyth
 
 $ ls
 [Coalgirls]_Clannad_10_(1280x720_Blu-Ray_FLAC)_[3827A783].mkv
