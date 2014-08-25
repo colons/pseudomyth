@@ -1,10 +1,15 @@
 # coding=utf-8
 
+from __future__ import print_function
+
 from random import choice
 from sys import argv, exit
 import os
 import shutil
-import subprocess
+try:
+    from subprocess import getoutput, getstatusoutput
+except ImportError:
+    from commands import getoutput, getstatusoutput
 import re
 
 player = 'mplayer -fs %s &> /dev/null'
@@ -52,9 +57,8 @@ class Episode():
         self.filename = filename
 
         # resolve aliases
-        if subprocess.getstatusoutput('getTrueName')[0] != 32512:
-            self.truefilename = subprocess.getoutput('getTrueName "%s"'
-                                                     % filename)
+        if getstatusoutput('getTrueName')[0] != 32512:
+            self.truefilename = getoutput('getTrueName "%s"' % filename)
         else:
             self.truefilename = self.filename
 
