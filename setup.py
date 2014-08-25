@@ -13,7 +13,7 @@ setup(
     url='https://github.com/colons/pseudomyth',
     author='Iain Dawson',
     author_email='pypi@colons.co',
-    version='1.0.1',
+    version='1.0.2',
     license="BSD",
     platforms=['any'],
     packages=['pseudomyth'],
