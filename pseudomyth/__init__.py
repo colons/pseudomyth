@@ -190,7 +190,11 @@ if not argv[-1] == 'legacy':
     else:
         plural = ''
 
-    print('／人◕ ‿‿ ◕人＼  ＬＥＴ’Ｓ　ＷＡＴＣＨ　%s　ＫＥＩＯＮ%s！' % (keion_count, plural))
+    print('／人{e} ‿‿ {e}人＼  ＬＥＴ’Ｓ　ＷＡＴＣＨ　{count}　ＫＥＩＯＮ{s}！'.format(
+        e='\x1b[31m◕\x1b[0m',
+        count=keion_count,
+        s=plural,
+    ))
 
     for series in sorted(serieslist, key=lambda series: series.name):
         print(series)
