@@ -1,18 +1,52 @@
 # coding=utf-8
 
-from __future__ import print_function
+from __future__ import print_function, unicode_literals
 
 from random import choice
 from sys import argv, exit
 import os
 import shutil
+
+try:
+    from shlex import quote
+except ImportError:
+    from pipes import quote
+
 try:
     from subprocess import getoutput, getstatusoutput
 except ImportError:
     from commands import getoutput, getstatusoutput
 import re
 
-player = 'mplayer -fs %s &> /dev/null'
+CONFIG = {}
+
+
+def open_command():
+    """
+    Get what we can reasonably assume is this system's general-purpose `open`
+    command.
+    """
+
+    path_dirs = os.environ.get('PATH').split(':')
+    fmt = '{cmd} {{filenames}}'
+
+    for candidate, path in ((c, p) for c in [
+        'xdg-open',  # most linux distros
+        'open',  # os x
+    ] for p in path_dirs):
+        if candidate in os.listdir(path):
+            return fmt.format(cmd=candidate)
+
+    print(
+        "Your system doesn't have an `open` command that I know to look for, "
+        "and you haven't configured a custom player command, so I don't know "
+        "how I should play video files.\n\n"
+        "If you create a file at ~/.pseudomyth and set it up with a shell "
+        "command I can use to play video files, that'd be helpful. As an "
+        "example, the author's looks something like this:\n\n"
+        ""  # XXX not actually true
+    )
+    exit(1)
 
 
 def fullwidth(string):
@@ -218,20 +252,44 @@ if not argv[-1] == 'legacy':
         weighted.remove(series)
 
         if series.op:
-            playlist.append('"%s"' % series.op.truefilename)
+            playlist.append(series.op.truefilename)
 
-        playlist.append('"%s"' % episode.truefilename)
+        playlist.append(episode.truefilename)
 
         if series.ed:
-            playlist.append('"%s"' % series.ed.truefilename)
+            playlist.append(series.ed.truefilename)
 
-        command = player % ' '.join(playlist)
+        configured_player = CONFIG.get('player')
+        if configured_player is None:
+            configured_player = open_command()
+
+        command = configured_player.format(
+            filenames=' '.join([quote(f) for f in playlist])
+        )
 
         print('\r -- playing...', end='')
-        os.system(command)
-        print('\r%i/%i - %s' % (n+1, total, episode), end='')
+        status, output = getstatusoutput(command)
 
-        shutil.move(episode.filename, 'consumed/%s' % episode.filename)
+        if status == 0:
+            shutil.move(episode.filename, 'consumed/%s' % episode.filename)
+        else:
+            print(
+                "\n\nThe playback command freaked out and I'm assuming "
+                "playback was not successful.\n\n"
+                "{file} has not been moved and I'm gonna quit now so you can "
+                "try to work out what happened. For reference, the command "
+                "that I ran was:\n\n"
+                "{command}\n\n"
+                "And the output of said command was:\n\n"
+                "{output}".format(
+                    file=quote(episode.filename),
+                    command=command,
+                    output=output,
+                )
+            )
+            exit(1)
+
+        print('\r%i/%i - %s' % (n+1, total, episode), end='')
 
 else:
     # manual series entry for when the above bullshit inevitably breaks
