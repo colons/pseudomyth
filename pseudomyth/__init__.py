@@ -271,6 +271,11 @@ if not argv[-1] == 'legacy':
     for series in sorted(serieslist, key=lambda series: series.name):
         print(series)
 
+    if serieslist:
+        print(
+            "\nWhen you're ready, press enter to start playing stuff or ^C "
+            "to exit")
+
     for n in range(len(weighted)):
         wait()
 
