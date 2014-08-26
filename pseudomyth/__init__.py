@@ -56,7 +56,7 @@ def open_command():
         'xdg-open',  # most linux distros
         'open',  # os x
     ] for p in path_dirs):
-        if candidate in os.listdir(path):
+        if os.path.isdir(path) and candidate in os.listdir(path):
             return fmt.format(cmd=candidate)
 
     print(
