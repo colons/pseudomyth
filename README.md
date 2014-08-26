@@ -43,3 +43,16 @@ the current working directory and the cycle begins anew. You could, at this
 point, either ^C out of the script or hit enter to watch another episode.
 Because watched episodes are moved, you can stop and resume between episodes at
 will.
+
+## Configuration
+
+If you don't want to use your system's default video player or pseudomyth can't
+work out what your system's default player is, you can configure an alternative
+command in a ~/.pseudomyth file. The command is specified as a shell command,
+where `{filenames}` will be replaced with the files (usually just one) to be
+played back. For example, mine looks like this:
+
+```ini
+[DEFAULT]
+command=mplayer -fs {filenames}
+```

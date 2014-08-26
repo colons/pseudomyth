@@ -2,6 +2,7 @@
 
 from __future__ import print_function, unicode_literals
 
+from configparser import RawConfigParser
 from random import choice
 from sys import argv, exit
 import os
@@ -44,9 +45,19 @@ def open_command():
         "If you create a file at ~/.pseudomyth and set it up with a shell "
         "command I can use to play video files, that'd be helpful. As an "
         "example, the author's looks something like this:\n\n"
-        ""  # XXX not actually true
+        "[DEFAULT]\n"
+        "command=mplayer -fs {filenames}"
     )
     exit(1)
+
+
+def populate_config():
+    config_path = os.path.expanduser('~/.pseudomyth')
+
+    if os.path.exists(config_path):
+        parser = RawConfigParser(dict_type=dict)
+        parser.read(config_path)
+        CONFIG.update(parser.defaults())
 
 
 def fullwidth(string):
@@ -195,6 +206,8 @@ class Episode():
 
 
 if not argv[-1] == 'legacy':
+    populate_config()
+
     if not os.path.exists('consumed'):
         os.makedirs('consumed')
 
@@ -259,7 +272,7 @@ if not argv[-1] == 'legacy':
         if series.ed:
             playlist.append(series.ed.truefilename)
 
-        configured_player = CONFIG.get('player')
+        configured_player = CONFIG.get('command')
         if configured_player is None:
             configured_player = open_command()
 
