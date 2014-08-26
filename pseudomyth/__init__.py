@@ -2,7 +2,11 @@
 
 from __future__ import print_function, unicode_literals
 
-from configparser import RawConfigParser
+try:
+    from configparser import RawConfigParser
+except ImportError:
+    from ConfigParser import RawConfigParser
+
 from random import choice
 from sys import argv, exit
 import os
@@ -20,6 +24,23 @@ except ImportError:
 import re
 
 CONFIG = {}
+
+
+def wait():
+    """
+    Await user input.
+    """
+
+    try:
+        inp = raw_input
+    except NameError:
+        # this is python 3
+        inp = input
+
+    try:
+        inp('')
+    except KeyboardInterrupt:
+        exit()
 
 
 def open_command():
@@ -251,10 +272,7 @@ if not argv[-1] == 'legacy':
         print(series)
 
     for n in range(len(weighted)):
-        try:
-            issued = input('')
-        except KeyboardInterrupt:
-            exit()
+        wait()
 
         series = choice(weighted)
         playlist = []
