@@ -55,7 +55,7 @@ def open_command():
     for candidate, path in ((c, p) for c in [
         'xdg-open',  # most linux distros
         'open',  # os x
-        'cygstart',  # cygwin
+        'cygstart', 'cygstart.exe',  # cygwin
     ] for p in path_dirs):
         if os.path.isdir(path) and candidate in os.listdir(path):
             return fmt.format(cmd=candidate)
