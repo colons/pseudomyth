@@ -25,6 +25,12 @@ import re
 
 CONFIG = {}
 
+try:
+    string_input = raw_input
+except NameError:
+    # this is python 3
+    string_input = input
+
 
 def wait():
     """
@@ -32,13 +38,7 @@ def wait():
     """
 
     try:
-        inp = raw_input
-    except NameError:
-        # this is python 3
-        inp = input
-
-    try:
-        inp('')
+        string_input('')
     except KeyboardInterrupt:
         exit()
 
@@ -333,7 +333,7 @@ else:
     showlist = []
 
     while True:
-        newkeion = input('')
+        newkeion = string_input('')
         if newkeion == '':
             break
         else:
@@ -348,4 +348,4 @@ else:
         nextshow = choice(showlist)
         print('%i/%i - %s' % (n+1, total, nextshow), end='')
         showlist.remove(nextshow)
-        input('')
+        string_input('')
