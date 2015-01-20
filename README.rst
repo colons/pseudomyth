@@ -9,6 +9,7 @@ Example
 ------
 
 ::
+
    $ pip install pseudomyth
 
    $ ls
@@ -55,5 +56,6 @@ where ``{filenames}`` will be replaced with the files (usually just one) to be
 played back. For example, mine looks like this:
 
 ::
+
    [DEFAULT]
    command=mplayer -fs {filenames}
