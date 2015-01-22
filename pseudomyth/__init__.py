@@ -17,10 +17,8 @@ try:
 except ImportError:
     from pipes import quote
 
-try:
-    from subprocess import getoutput, getstatusoutput
-except ImportError:
-    from commands import getoutput, getstatusoutput
+from subprocess import check_output, CalledProcessError
+
 import re
 
 CONFIG = {}
@@ -122,12 +120,6 @@ class Episode():
     def __init__(self, filename):
         self.parsed = False
         self.filename = filename
-
-        # resolve aliases
-        if getstatusoutput('getTrueName')[0] != 32512:
-            self.truefilename = getoutput('getTrueName "%s"' % filename)
-        else:
-            self.truefilename = self.filename
 
         exts = ['mkv', 'avi', 'mp4', 'mpg', 'webm', 'mov', 'ogg', 'wmv', 'flv',
                 'm4v']
@@ -270,7 +262,7 @@ if not argv[-1] == 'legacy':
     ))
 
     for series in sorted(serieslist, key=lambda series: series.name):
-        print(series)
+        print('{}'.format(series))
 
     if serieslist:
         print(
@@ -289,12 +281,12 @@ if not argv[-1] == 'legacy':
         weighted.remove(series)
 
         if series.op:
-            playlist.append(series.op.truefilename)
+            playlist.append(series.op.filename)
 
-        playlist.append(episode.truefilename)
+        playlist.append(episode.filename)
 
         if series.ed:
-            playlist.append(series.ed.truefilename)
+            playlist.append(series.ed.filename)
 
         configured_player = CONFIG.get('command')
         if configured_player is None:
@@ -305,11 +297,9 @@ if not argv[-1] == 'legacy':
         )
 
         print('\r -- playing...', end='')
-        status, output = getstatusoutput(command)
-
-        if status == 0:
-            shutil.move(episode.filename, 'consumed/%s' % episode.filename)
-        else:
+        try:
+            check_output(command, shell=True)
+        except CalledProcessError as e:
             print(
                 "\n\nThe playback command freaked out and I'm assuming "
                 "playback was not successful.\n\n"
@@ -321,10 +311,12 @@ if not argv[-1] == 'legacy':
                 "{output}".format(
                     file=quote(episode.filename),
                     command=command,
-                    output=output,
+                    output=e.output,
                 )
             )
             exit(1)
+        else:
+            shutil.move(episode.filename, 'consumed/%s' % episode.filename)
 
         print('\r%i/%i - %s' % (n+1, total, episode), end='')
 
