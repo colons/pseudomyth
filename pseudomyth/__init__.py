@@ -272,7 +272,6 @@ if not argv[-1] == 'legacy':
     for n in range(len(weighted)):
         wait()
 
-        series = choice(weighted)
         playlist = []
 
         series = choice(weighted)
