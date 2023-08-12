@@ -78,31 +78,6 @@ def fullwidth(string: str) -> str:
     return ''.join([chars[c] for c in string])
 
 
-class Series():
-    """ A series. Contains episodes. """
-    def __init__(self, name: str) -> None:
-        self.name = name
-        self.episodes: list[Episode] = []
-        self.op = self.ed = None
-
-    def __repr__(self) -> str:
-        bonus = ''
-        if self.op:
-            bonus += 'OP '
-        if self.ed:
-            bonus += 'ED '
-
-        return '%s %r %s' % (self.name, [e.epno for e in self.episodes], bonus)
-
-    def append(self, episode: Episode) -> None:
-        if isinstance(episode.epno, str) and episode.epno in ['op', 'ed']:
-            setattr(self, episode.epno, episode)
-        else:
-            self.episodes.append(episode)
-            self.episodes = sorted(self.episodes,
-                                   key=lambda episode: episode.epno)
-
-
 class Episode():
     """ An episode within a series, and its associated file. """
     epno: str | int
@@ -208,6 +183,31 @@ class Episode():
 
         self.parsed = True
         # print '%s - %i %r' % (series, epno, metadata)
+
+
+class Series():
+    """ A series. Contains episodes. """
+    def __init__(self, name: str) -> None:
+        self.name = name
+        self.episodes: list[Episode] = []
+        self.op = self.ed = None
+
+    def __repr__(self) -> str:
+        bonus = ''
+        if self.op:
+            bonus += 'OP '
+        if self.ed:
+            bonus += 'ED '
+
+        return '%s %r %s' % (self.name, [e.epno for e in self.episodes], bonus)
+
+    def append(self, episode: Episode) -> None:
+        if isinstance(episode.epno, str) and episode.epno in ['op', 'ed']:
+            setattr(self, episode.epno, episode)
+        else:
+            self.episodes.append(episode)
+            self.episodes = sorted(self.episodes,
+                                   key=lambda episode: episode.epno)
 
 
 if not argv[-1] == 'legacy':
@@ -320,8 +320,6 @@ else:
             break
         else:
             showlist.append(newkeion)
-
-    # showlist.append('strike witches')
 
     total = len(showlist)
     n = 1
