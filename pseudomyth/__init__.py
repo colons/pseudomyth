@@ -69,7 +69,18 @@ def populate_config() -> None:
 
 
 def fullwidth(string: str) -> str:
-    # zenhan is broken, we need to do this manually
+    """
+    Convert normal ascii-range integers into their fullwidth equivalents.
+    Throw an error if something else is given.
+
+    >>> fullwidth('0123456789')
+    '０１２３４５６７８９'
+    >>> fullwidth('hello')
+    Traceback (most recent call last):
+      ...
+    KeyError: 'h'
+    """
+
     chars = {
         '0': '０', '1': '１', '2': '２', '3': '３', '4': '４', '5': '５',
         '6': '６', '7': '７', '8': '８', '9': '９',
