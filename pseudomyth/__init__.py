@@ -64,9 +64,9 @@ def open_command():
         "how I should play video files.\n\n"
         "If you create a file at ~/.pseudomyth and set it up with a shell "
         "command I can use to play video files, that'd be helpful. As an "
-        "example, the author's looks something like this:\n\n"
+        "example, mine looks something like this:\n\n"
         "[DEFAULT]\n"
-        "command=mplayer -fs {filenames}"
+        "command=mpv -fs {filenames}"
     )
     exit(1)
 
