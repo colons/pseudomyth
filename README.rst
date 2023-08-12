@@ -58,4 +58,4 @@ played back. For example, mine looks like this:
 ::
 
    [DEFAULT]
-   command=mplayer -fs {filenames}
+   command=mpv -fs {filenames}
