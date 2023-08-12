@@ -210,7 +210,7 @@ class Series():
                                    key=lambda episode: episode.epno)
 
 
-if not argv[-1] == 'legacy':
+def automatic_mode() -> None:
     populate_config()
 
     if not os.path.exists('consumed'):
@@ -310,8 +310,12 @@ if not argv[-1] == 'legacy':
 
         print('\r%i/%i - %s' % (n+1, total, episode), end='')
 
-else:
-    # manual series entry for when the above bullshit inevitably breaks
+
+def legacy_mode() -> None:
+    """
+    Manual series entry for when :func:`automatic_mode` inevitably breaks.
+    """
+
     showlist = []
 
     while True:
@@ -329,3 +333,10 @@ else:
         print('%i/%i - %s' % (n+1, total, nextshow), end='')
         showlist.remove(nextshow)
         input('')
+
+
+if __name__ == '__main__':
+    if not argv[-1] == 'legacy':
+        automatic_mode()
+    else:
+        legacy_mode()
