@@ -1,33 +1,13 @@
-# coding=utf-8
-
-from __future__ import print_function, unicode_literals
-
-try:
-    from configparser import RawConfigParser
-except ImportError:
-    from ConfigParser import RawConfigParser
-
+from configparser import RawConfigParser
 from random import choice
-from sys import argv, exit
+from sys import argv, exit, version_info
+from shlex import quote
+from subprocess import check_output, CalledProcessError
 import os
+import re
 import shutil
 
-try:
-    from shlex import quote
-except ImportError:
-    from pipes import quote
-
-from subprocess import check_output, CalledProcessError
-
-import re
-
 CONFIG = {}
-
-try:
-    string_input = raw_input
-except NameError:
-    # this is python 3
-    string_input = input
 
 
 def wait():
@@ -36,7 +16,7 @@ def wait():
     """
 
     try:
-        string_input('')
+        input('')
     except KeyboardInterrupt:
         exit()
 
@@ -324,7 +304,7 @@ else:
     showlist = []
 
     while True:
-        newkeion = string_input('')
+        newkeion = input('')
         if newkeion == '':
             break
         else:
@@ -339,4 +319,4 @@ else:
         nextshow = choice(showlist)
         print('%i/%i - %s' % (n+1, total, nextshow), end='')
         showlist.remove(nextshow)
-        string_input('')
+        input('')
