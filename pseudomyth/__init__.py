@@ -3,14 +3,15 @@ from random import choice
 from sys import argv, exit, version_info
 from shlex import quote
 from subprocess import check_output, CalledProcessError
+from typing import NoReturn
 import os
 import re
 import shutil
 
-CONFIG = {}
+CONFIG: dict[str, str] = {}
 
 
-def wait():
+def wait() -> None:
     """
     Await user input.
     """
@@ -21,13 +22,30 @@ def wait():
         exit()
 
 
-def open_command():
+def open_command() -> str:
     """
     Get what we can reasonably assume is this system's general-purpose `open`
     command.
     """
 
-    path_dirs = os.environ.get('PATH').split(':')
+    def give_up() -> NoReturn:
+        print(
+            "Your system doesn't have an `open` command that I know to look for, "
+            "and you haven't configured a custom player command, so I don't know "
+            "how I should play video files.\n\n"
+            "If you create a file at ~/.pseudomyth and set it up with a shell "
+            "command I can use to play video files, that'd be helpful. As an "
+            "example, mine looks something like this:\n\n"
+            "[DEFAULT]\n"
+            "command=mpv -fs {filenames}"
+        )
+        exit(1)
+
+    path = os.environ.get('PATH')
+    if path is None:
+        give_up()
+
+    path_dirs = path.split(':')
     fmt = '{cmd} {{filenames}}'
 
     for candidate, path in ((c, p) for c in [
@@ -38,20 +56,10 @@ def open_command():
         if os.path.isdir(path) and candidate in os.listdir(path):
             return fmt.format(cmd=candidate)
 
-    print(
-        "Your system doesn't have an `open` command that I know to look for, "
-        "and you haven't configured a custom player command, so I don't know "
-        "how I should play video files.\n\n"
-        "If you create a file at ~/.pseudomyth and set it up with a shell "
-        "command I can use to play video files, that'd be helpful. As an "
-        "example, mine looks something like this:\n\n"
-        "[DEFAULT]\n"
-        "command=mpv -fs {filenames}"
-    )
-    exit(1)
+    give_up()
 
 
-def populate_config():
+def populate_config() -> None:
     config_path = os.path.expanduser('~/.pseudomyth')
 
     if os.path.exists(config_path):
@@ -60,7 +68,7 @@ def populate_config():
         CONFIG.update(parser.defaults())
 
 
-def fullwidth(string):
+def fullwidth(string: str) -> str:
     # zenhan is broken, we need to do this manually
     chars = {
         '0': '０', '1': '１', '2': '２', '3': '３', '4': '４', '5': '５',
@@ -72,12 +80,12 @@ def fullwidth(string):
 
 class Series():
     """ A series. Contains episodes. """
-    def __init__(self, name):
+    def __init__(self, name: str) -> None:
         self.name = name
-        self.episodes = []
-        self.op = self.ed = False
+        self.episodes: list[Episode] = []
+        self.op = self.ed = None
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         bonus = ''
         if self.op:
             bonus += 'OP '
@@ -86,8 +94,8 @@ class Series():
 
         return '%s %r %s' % (self.name, [e.epno for e in self.episodes], bonus)
 
-    def append(self, episode):
-        if episode.epno in ['op', 'ed']:
+    def append(self, episode: Episode) -> None:
+        if isinstance(episode.epno, str) and episode.epno in ['op', 'ed']:
             setattr(self, episode.epno, episode)
         else:
             self.episodes.append(episode)
@@ -97,7 +105,10 @@ class Series():
 
 class Episode():
     """ An episode within a series, and its associated file. """
-    def __init__(self, filename):
+    epno: str | int
+    series: str
+
+    def __init__(self, filename: str) -> None:
         self.parsed = False
         self.filename = filename
 
@@ -108,10 +119,10 @@ class Episode():
                 and filename.split('.')[-1].lower() in exts):
             self.parse(os.path.splitext(filename)[0])
 
-    def __repr__(self):
-        return '%s - %i' % (self.series, self.epno)
+    def __repr__(self) -> str:
+        return f'{self.series} - {self.epno}'
 
-    def parse(self, filename):
+    def parse(self, filename: str) -> None:
         filename = filename.replace('_', ' ')
 
         # remove repeated spaces
@@ -123,7 +134,7 @@ class Episode():
         for m in metadata:
             filename = filename.replace(m, '').strip()
 
-        epno = None
+        epno: str | int | None = None
         epno_matches = [
             # S01E01
             r'\bS\d+E(?P<epno>\d+)\b',
@@ -205,7 +216,7 @@ if not argv[-1] == 'legacy':
     if not os.path.exists('consumed'):
         os.makedirs('consumed')
 
-    serieslist = []
+    serieslist: list[Series] = []
 
     files = [name for name in os.listdir('.') if not name.startswith('.')]
 
