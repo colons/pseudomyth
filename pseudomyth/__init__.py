@@ -3,12 +3,12 @@ from random import choice
 from sys import argv, exit, version_info
 from shlex import quote
 from subprocess import check_output, CalledProcessError
-from typing import NoReturn
+from typing import Dict, List, NoReturn, Union
 import os
 import re
 import shutil
 
-CONFIG: dict[str, str] = {}
+CONFIG: Dict[str, str] = {}
 
 
 def wait() -> None:
@@ -91,7 +91,7 @@ def fullwidth(string: str) -> str:
 
 class Episode():
     """ An episode within a series, and its associated file. """
-    epno: str | int
+    epno: Union[str, int]
     series: str
 
     def __init__(self, filename: str) -> None:
@@ -200,7 +200,7 @@ class Series():
     """ A series. Contains episodes. """
     def __init__(self, name: str) -> None:
         self.name = name
-        self.episodes: list[Episode] = []
+        self.episodes: List[Episode] = []
         self.op = self.ed = None
 
     def __repr__(self) -> str:
@@ -227,7 +227,7 @@ def automatic_mode() -> None:
     if not os.path.exists('consumed'):
         os.makedirs('consumed')
 
-    serieslist: list[Series] = []
+    serieslist: List[Series] = []
 
     files = [name for name in os.listdir('.') if not name.startswith('.')]
 
