@@ -26,13 +26,13 @@ Example
    [SGKK-Ruri] Deadman Wonderland - 01 (1280x720 H264 AAC) [666F0275].mkv
    [SGKK-Ruri] Deadman Wonderland - 02 (1280x720 H264 AAC) [CD79F07F].mkv
 
-   $ pseudomyth 
+   $ pseudomyth
    ／人◕ ‿‿ ◕人＼  ＬＥＴ’Ｓ　ＷＡＴＣＨ　１０　ＫＥＩＯＮＳ！
    Clannad [10] OP ED 
    Deadman Wonderland [1, 2] 
    Persona 4 [25, 26] 
-   Space Brothers [19, 20, 21] 
-   YuruYuri [4, 5] 
+   Space Brothers [19, 20, 21]
+   YuruYuri [4, 5]
 
 At this stage, if the list of episodes is to your satisfaction, you could hit
 enter and pseudomyth would start playing back the first present episode of a
