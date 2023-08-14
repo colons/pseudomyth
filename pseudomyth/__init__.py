@@ -1,6 +1,6 @@
 from configparser import RawConfigParser
 from random import choice
-from sys import exit, version_info
+from sys import exit
 from shlex import quote
 from subprocess import check_output, CalledProcessError
 from typing import Dict, List, NoReturn, Union
@@ -116,7 +116,7 @@ class Episode():
             filename = filename.replace('  ', ' ')
 
         # remove metadata (things in brackets)
-        metadata = re.findall('[\(\[].*?[\)\]]', filename)
+        metadata = re.findall(r'[\(\[].*?[\)\]]', filename)
         for m in metadata:
             filename = filename.replace(m, '').strip()
 
