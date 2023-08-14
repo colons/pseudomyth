@@ -1,0 +1,11 @@
+on: [push]
+jobs:
+  test:
+    name: "run tests"
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.6'
+      - run: ./test.sh
