@@ -3,31 +3,40 @@ jobs:
   test:
     name: "run tests"
     runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        python-version: ['3.6', '3.7', '3.8', '3.9', '3.10', '3.11']
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
-          python-version: '3.6'
+          python-version: '${{ matrix.python-version }}'
       - run: ./test.sh
 
   mypy:
     name: "check types"
     runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        python-version: ['3.6', '3.7', '3.8', '3.9', '3.10', '3.11']
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
-          python-version: '3.6'
+          python-version: '${{ matrix.python-version }}'
       - run: pip install mypy
       - run: mypy
 
   flake8:
     name: "lint"
     runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        python-version: ['3.6', '3.7', '3.8', '3.9', '3.10', '3.11']
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
-          python-version: '3.6'
+          python-version: '${{ matrix.python-version }}'
       - run: pip install flake8
       - run: flake8
