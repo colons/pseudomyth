@@ -120,7 +120,7 @@ class Episode():
         for m in metadata:
             filename = filename.replace(m, '').strip()
 
-        epno: str | int | None = None
+        epno: Union[str, int, None] = None
         epno_matches = [
             # S01E01
             r'\bS\d+E(?P<epno>\d+)\b',
