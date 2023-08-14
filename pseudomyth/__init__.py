@@ -1,6 +1,6 @@
 from configparser import RawConfigParser
 from random import choice
-from sys import argv, exit, version_info
+from sys import exit, version_info
 from shlex import quote
 from subprocess import check_output, CalledProcessError
 from typing import Dict, List, NoReturn, Union
@@ -344,10 +344,3 @@ def legacy_mode() -> None:
         print('%i/%i - %s' % (n+1, total, nextshow), end='')
         showlist.remove(nextshow)
         input('')
-
-
-if __name__ == '__main__':
-    if not argv[-1] == 'legacy':
-        automatic_mode()
-    else:
-        legacy_mode()
